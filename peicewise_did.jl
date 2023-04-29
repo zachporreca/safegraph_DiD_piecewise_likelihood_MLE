@@ -8,8 +8,8 @@ Pkg.add("Optim")
 Pkg.add("Distributed")
 using RData
 import CodecBzip2
-rdata=load("/home/zach/Documents/Projects/mnl/julia/export_for_julia.rda")
-rdata=rdata["export_for_julia"]
+rdata=load("") #filepath
+rdata=rdata[""] #name of data.frame from R
 v=rdata[:,1]
 x1=rdata[:,2]
 x2=rdata[:,3]
@@ -41,7 +41,7 @@ est(a, b1, b2, b3, v, x1, x2, x3) = -1 .* (sum(log10.(fixILL.(pwll.(v, x1, x2, x
 
 obj(input; v = v, x1 = x1, x2 = x2, x3 = x3) = est(input[1], input[2], input[3], input[4], v, x1, x2, x3)
 
-optimum=optimize(obj, [1.8766319631698072, 0.04200626716369201, -0.1459075541221298, -0.10306484658897207])
+optimum=optimize(obj, [0, 0, 0, 0]) #starting values can be changed to increase speed
 MLE=optimum.minimum
 parameter=optimum.minimizer
 
@@ -56,9 +56,9 @@ post_treat_bs=Float64[]
 using Distributions, Optim, Distributed
 
 
-@distributed for i in 1:100
+@distributed for i in 1:100 #100 is number of bootstrap iterations here, 
     print(i)
-    jsample=sample([1:1:29477729;],29477729, replace=true)
+    jsample=sample([1:1:29477729;],29477729, replace=true) #29477729 is number of observations
     jv=v[jsample]
     jx1=x1[jsample]
     jx2=x2[jsample]
@@ -88,7 +88,7 @@ using Distributions, Optim, Distributed
     
     obj(input; jv = jv, jx1 = jx1, jx2 = jx2, jx3 = jx3) = est(input[1], input[2], input[3], input[4], jv, jx1, jx2, jx3)
     
-    joptimum=optimize(obj, [1.8766319631698072, 0.04200626716369201, -0.1459075541221298, -0.10306484658897207])
+    joptimum=optimize(obj, [0, 0, 0, 0]) #can change starting values
     jMLE=joptimum.minimum
     jparameter=joptimum.minimizer
     push!(intercepts_bs, jparameter[1])
@@ -112,4 +112,4 @@ bootstrapped = DataFrame(intercept=intercepts_bs, post=post_bs, treat=treat_bs, 
 
 Pkg.add("CSV")
 using CSV
-CSV.write("//home//zach//Documents//Projects//mnl//julia//bootstrap_100.csv", bootstrapped)
+CSV.write("", bootstrapped) #file path between quotation marks, saving a CSV of bootstrapped estimates
