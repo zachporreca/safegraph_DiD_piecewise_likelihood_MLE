@@ -6,6 +6,10 @@ Pkg.add("CodecBzip2")
 Pkg.add("Distributions")
 Pkg.add("Optim")
 Pkg.add("Distributed")
+Pkg.add("DataFrames")
+Pkg.add("CSV")
+
+
 using RData
 import CodecBzip2
 rdata=load("") #filepath
@@ -106,10 +110,8 @@ std(post_bs)
 std(treat_bs)
 std(post_treat_bs)
 
-Pkg.add("DataFrames")
 using DataFrames
 bootstrapped = DataFrame(intercept=intercepts_bs, post=post_bs, treat=treat_bs, post_treat=post_treat_bs)
 
-Pkg.add("CSV")
 using CSV
 CSV.write("", bootstrapped) #file path between quotation marks, saving a CSV of bootstrapped estimates
